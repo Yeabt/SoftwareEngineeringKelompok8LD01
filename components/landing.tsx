@@ -1,29 +1,30 @@
-import Link from "next/link"
+import Link from "next/link";
+import styles from "@/styles/Landing.module.css";
 
 export default function Landing() {
   return (
-    <main className="bg-lightgray text-black min-h-screen flex flex-col">
+    <main className={styles.main}>
       {/* Hero Section */}
-      <section className="flex flex-col items-center justify-center text-center px-4 py-20 bg-white">
-        <h1 className="text-4xl md:text-5xl font-bold text-darkblue mb-4">
+      <section className={styles.heroSection}>
+        <h1 className={styles.heroTitle}>
           Welcome to SmartSpend!
         </h1>
-        <p className="text-lg md:text-xl mb-6 text-black">
+        <p className={styles.heroSubtitle}>
           Get Started for Free Now!
         </p>
-        <Link href="/get-started">
-          <button className="bg-yellow text-black font-semibold py-3 px-6 rounded-lg hover:bg-darkblue hover:text-white transition">
+        <Link href="/signin">
+          <button className={styles.button}>
             Start Now
           </button>
         </Link>
       </section>
 
       {/* Features Section */}
-      <section className="bg-lightgray py-16 px-6">
-        <h2 className="text-3xl font-bold text-center text-darkblue mb-10">
+      <section className={styles.featuresSection}>
+        <h2 className={styles.featuresTitle}>
           Why Choose SmartSpend?
         </h2>
-        <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+        <div className={styles.featuresGrid}>
           {[
             {
               title: "Track Your Expenses",
@@ -40,28 +41,28 @@ export default function Landing() {
           ].map((item, i) => (
             <div
               key={i}
-              className="bg-white p-6 rounded-xl shadow hover:shadow-md transition"
+              className={styles.featureCard}
             >
-              <h3 className="text-xl font-semibold text-darkblue mb-2">{item.title}</h3>
-              <p className="text-gray-700">{item.desc}</p>
+              <h3 className={styles.featureTitle}>{item.title}</h3>
+              <p className={styles.featureDesc}>{item.desc}</p>
             </div>
           ))}
         </div>
       </section>
 
       {/* CTA Section */}
-      <section className="bg-darkblue text-white text-center py-16 px-6">
-        <h2 className="text-3xl font-bold mb-4">Ready to take control of your finances?</h2>
-        <p className="text-lg mb-6">Join SmartSpend today – it's free!</p>
-        <Link href="/signup">
-          <button className="bg-yellow text-black font-semibold py-3 px-6 rounded-lg hover:bg-white hover:text-darkblue transition">
+      <section className={styles.ctaSection}>
+        <h2 className={styles.ctaTitle}>Ready to take control of your finances?</h2>
+        <p className={styles.ctaText}>Join SmartSpend today – it's free!</p>
+        <Link href="/signin">
+          <button className={styles.ctaButton}>
             Create Your Account
           </button>
         </Link>
       </section>
 
       {/* Footer */}
-      <footer className="bg-black text-white text-center py-6 mt-auto">
+      <footer className={styles.footer}>
         <p>© {new Date().getFullYear()} SmartSpend. All rights reserved.</p>
       </footer>
     </main>
