@@ -1,5 +1,5 @@
 import About from "@/components/about";
 import { Navbar } from '@/components/navbar'
 export default function AboutPage() {
-    return <><About /></>
+    return <><Navbar /><About /></>
 }

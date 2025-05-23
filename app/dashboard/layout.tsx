@@ -26,10 +26,6 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
         <div className="flex min-h-screen">
           <Sidebar />
           <div className="flex-1 bg-gray-100">
@@ -37,7 +33,5 @@ export default function DashboardLayout({
             <main className="p-6">{children}</main>
           </div>
         </div>
-      </body>
-    </html>
   );
 }
