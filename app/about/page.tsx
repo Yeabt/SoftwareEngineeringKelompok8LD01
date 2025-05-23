@@ -1,5 +1,5 @@
-import Hero from "@/components/hero";
-
+import About from "@/components/about";
+import { Navbar } from '@/components/navbar'
 export default function AboutPage() {
-    return <Hero />
+    return <><About /></>
 }
