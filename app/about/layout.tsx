@@ -23,6 +23,6 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-        <><Navbar /><main>{children}</main></>
+        <main>{children}</main>
   );
 }
