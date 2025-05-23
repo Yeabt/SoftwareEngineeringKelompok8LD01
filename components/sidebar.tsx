@@ -6,6 +6,7 @@ export default function Sidebar() {
       <ul className="space-y-4">
         <li><a href="/dashboard">Overview</a></li>
         <li><a href="/dashboard/budget">Budget</a></li>
+        <li><a href="/Transaction">Transactions</a></li>
         <li><a href="/">Back to Home</a></li>
       </ul>
     </aside>
