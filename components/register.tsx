@@ -9,11 +9,11 @@ export default function Register() {
   const [email, setEmail] = useState("");
   const [name, setName] = useState("");
   const [password, setPassword] = useState("");
-  
+
   const [cooldown, setCooldown] = useState(0);
   const [isVerifying, setIsVerifying] = useState(false);
   const [verificationSent, setVerificationSent] = useState(false);
-  
+
   const isEmailValid = /^[^\s@]+@gmail\.com$/i.test(email);
 
   useEffect(() => {
@@ -25,7 +25,7 @@ export default function Register() {
   const handleVerifyClick = () => {
     if (cooldown === 0 && isEmailValid) {
       setIsVerifying(true);
-      
+
       setTimeout(() => {
         console.log("Verification code sent to:", email);
         setVerificationSent(true);
@@ -62,7 +62,10 @@ export default function Register() {
 
           <form className="space-y-4" onSubmit={handleSubmit}>
             <div>
-              <label htmlFor="name" className="block text-sm font-medium text-white mb-1">
+              <label
+                htmlFor="name"
+                className="block text-sm font-medium text-white mb-1"
+              >
                 Name
               </label>
               <input
@@ -77,7 +80,10 @@ export default function Register() {
             </div>
 
             <div>
-              <label htmlFor="email" className="block text-sm font-medium text-white mb-1">
+              <label
+                htmlFor="email"
+                className="block text-sm font-medium text-white mb-1"
+              >
                 Email
               </label>
               <div className="relative">
@@ -87,7 +93,9 @@ export default function Register() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value.trim())}
                   className={`w-full px-4 py-2 border ${
-                    email && !isEmailValid ? "border-red-500" : "border-gray-300"
+                    email && !isEmailValid
+                      ? "border-red-500"
+                      : "border-gray-300"
                   } rounded-lg focus:ring-2 focus:ring-yellow-500 caret-amber-500 bg-darkblue text-white pr-28`}
                   placeholder="@gmail.com"
                   required
@@ -108,9 +116,23 @@ export default function Register() {
                 >
                   {isVerifying ? (
                     <span className="flex items-center">
-                      <svg className="animate-spin h-4 w-4 mr-1" viewBox="0 0 24 24">
-                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                      <svg
+                        className="animate-spin h-4 w-4 mr-1"
+                        viewBox="0 0 24 24"
+                      >
+                        <circle
+                          className="opacity-25"
+                          cx="12"
+                          cy="12"
+                          r="10"
+                          stroke="currentColor"
+                          strokeWidth="4"
+                        ></circle>
+                        <path
+                          className="opacity-75"
+                          fill="currentColor"
+                          d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                        ></path>
                       </svg>
                       Sending
                     </span>
@@ -122,14 +144,21 @@ export default function Register() {
                 </button>
               </div>
               {email && !isEmailValid && (
-                <p className="mt-1 text-xs text-red-400">Please enter a valid email address</p>
+                <p className="mt-1 text-xs text-red-400">
+                  Please enter a valid email address
+                </p>
               )}
               {verificationSent && isEmailValid && (
-                <p className="mt-1 text-xs text-green-400">Verification Code has been sent to your email</p>
+                <p className="mt-1 text-xs text-green-400">
+                  Verification Code has been sent to your email
+                </p>
               )}
             </div>
             <div>
-              <label htmlFor="password" className="block text-sm font-medium text-white mb-1">
+              <label
+                htmlFor="password"
+                className="block text-sm font-medium text-white mb-1"
+              >
                 Password
               </label>
               <input
