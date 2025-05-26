@@ -56,7 +56,7 @@ def run_monthly_updater():
         if now.day == 1 and now.hour == 1:
             update_model_monthly()
             print("updated succesfully")
-            time.sleep(60)  # wait a day
+            time.sleep(6000)  # wait a day
         
         print("i am a sleep")    
         time.sleep(60)
@@ -70,6 +70,6 @@ def get_forecast():
 if __name__ == "__main__":
     import uvicorn
     threading.Thread(target=run_monthly_updater, daemon=True).start()
-    uvicorn.run(app, host="127.0.0.1", port=8000)
-    
+    uvicorn.run(app, host="127.0.0.1", port=8001) #port 8000 is alr used
+
 #command to start = python main.py
