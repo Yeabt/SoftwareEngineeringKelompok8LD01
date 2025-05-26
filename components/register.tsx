@@ -6,20 +6,16 @@ import Head from "next/head";
 import { useState, useEffect } from "react";
 
 export default function Register() {
-  // Form state
   const [email, setEmail] = useState("");
   const [name, setName] = useState("");
   const [password, setPassword] = useState("");
   
-  // Verification state
   const [cooldown, setCooldown] = useState(0);
   const [isVerifying, setIsVerifying] = useState(false);
   const [verificationSent, setVerificationSent] = useState(false);
   
-  // Validation
-  const isEmailValid = /^\S+@\S+\.\S+$/.test(email);
+  const isEmailValid = /^[^\s@]+@gmail\.com$/i.test(email);
 
-  // Handle cooldown timer
   useEffect(() => {
     if (cooldown <= 0) return;
     const timer = setTimeout(() => setCooldown(cooldown - 1), 1000);
@@ -30,9 +26,8 @@ export default function Register() {
     if (cooldown === 0 && isEmailValid) {
       setIsVerifying(true);
       
-      // Simulate API call
       setTimeout(() => {
-        console.log("Verification email sent to:", email);
+        console.log("Verification code sent to:", email);
         setVerificationSent(true);
         setCooldown(60);
         setIsVerifying(false);
@@ -42,7 +37,6 @@ export default function Register() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // Handle form submission
     console.log({ name, email, password });
   };
 
@@ -67,7 +61,6 @@ export default function Register() {
           </div>
 
           <form className="space-y-4" onSubmit={handleSubmit}>
-            {/* Name Field */}
             <div>
               <label htmlFor="name" className="block text-sm font-medium text-white mb-1">
                 Name
@@ -83,15 +76,9 @@ export default function Register() {
               />
             </div>
 
-            {/* Email Field with Verification */}
             <div>
               <label htmlFor="email" className="block text-sm font-medium text-white mb-1">
                 Email
-                {verificationSent && (
-                  <span className="ml-2 text-xs text-green-400">
-                    {cooldown > 0 ? `(resend in ${cooldown}s)` : "(ready to resend)"}
-                  </span>
-                )}
               </label>
               <div className="relative">
                 <input
@@ -102,7 +89,7 @@ export default function Register() {
                   className={`w-full px-4 py-2 border ${
                     email && !isEmailValid ? "border-red-500" : "border-gray-300"
                   } rounded-lg focus:ring-2 focus:ring-yellow-500 caret-amber-500 bg-darkblue text-white pr-28`}
-                  placeholder="your@email.com"
+                  placeholder="@gmail.com"
                   required
                   disabled={isVerifying}
                 />
@@ -138,11 +125,9 @@ export default function Register() {
                 <p className="mt-1 text-xs text-red-400">Please enter a valid email address</p>
               )}
               {verificationSent && isEmailValid && (
-                <p className="mt-1 text-xs text-green-400">Verification email sent successfully</p>
+                <p className="mt-1 text-xs text-green-400">Verification Code has been sent to your email</p>
               )}
             </div>
-
-            {/* Password Field */}
             <div>
               <label htmlFor="password" className="block text-sm font-medium text-white mb-1">
                 Password
@@ -158,8 +143,6 @@ export default function Register() {
                 minLength={8}
               />
             </div>
-
-            {/* Submit Button */}
             <button
               type="submit"
               className="w-full bg-amber-600 hover:bg-yellow-500 text-black hover:text-gray-200 font-medium py-2 px-4 rounded-xl text-center transition-colors duration-200"
