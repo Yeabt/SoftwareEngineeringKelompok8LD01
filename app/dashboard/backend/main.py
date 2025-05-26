@@ -32,15 +32,47 @@ def update_model_monthly():
         df = df.groupby([df['date'].dt.to_period('M'), 'category'])['amount'].sum().reset_index()
         df['date'] = df['date'].dt.to_timestamp()
 
+        
         results = {}
         for cat in df['category'].unique():
             cat_data = df[df['category'] == cat].copy()
             cat_data.set_index('date', inplace=True)
-            model = SARIMAX(cat_data['amount'], order=(1, 1, 1), seasonal_order=(1, 1, 1, 12))
-            fitted = model.fit(disp=False)
-            forecast = fitted.forecast(steps=1)
-            forecast_value = forecast.iloc[0]
-            results[cat] = f"Rp. {int(round(forecast_value)):,}".replace(",", ".")
+
+            months_of_data = cat_data.index.to_period('M').nunique()
+
+            if months_of_data >= 12:
+                try:
+                    model = SARIMAX(cat_data['amount'], order=(1, 1, 1), seasonal_order=(1, 1, 1, 12))
+                    fitted = model.fit(disp=False)
+                    forecast = fitted.forecast(steps=1)
+                    forecast_value = forecast.iloc[0]
+                    results[cat] = f"Rp. {int(round(forecast_value)):,}".replace(",", ".")
+                except Exception as e:
+                    print(f"SARIMA failed for {cat}: {e}")
+                    results[cat] = "Forecasting error"
+            elif months_of_data >= 1:
+                from sklearn.linear_model import LinearRegression
+                import numpy as np
+
+                cat_data = df[df['category'] == cat].copy()
+                cat_data.set_index('date', inplace=True)
+                cat_data = cat_data.resample('M').sum()
+
+                cat_data = cat_data.reset_index()
+                cat_data['month_index'] = np.arange(len(cat_data))
+
+                X = cat_data[['month_index']]
+                y = cat_data['amount']
+                model = LinearRegression().fit(X, y)
+
+                next_month_index = len(cat_data)
+                forecast_value = model.predict([[next_month_index]])[0]
+                results[cat] = f"Rp. {int(round(forecast_value)):,}".replace(",", ".")
+
+                print(f"Fallback regression model used for {cat} — using {months_of_data} months")
+
+            else:
+                results[cat] = "Insufficient data"
 
         monthly_forecast = results
         print("Monthly forecast updated:", monthly_forecast)
@@ -56,10 +88,10 @@ def run_monthly_updater():
         if now.day == 1 and now.hour == 1:
             update_model_monthly()
             print("updated succesfully")
-            time.sleep(6000)  # wait a day
+            time.sleep(86400)  # wait a day
         
         print("i am a sleep")    
-        time.sleep(60)
+        time.sleep(3600)
 
 @app.get("/forecast")
 def get_forecast():
@@ -70,6 +102,8 @@ def get_forecast():
 if __name__ == "__main__":
     import uvicorn
     threading.Thread(target=run_monthly_updater, daemon=True).start()
-    uvicorn.run(app, host="127.0.0.1", port=8001) #port 8000 is alr used
+    uvicorn.run(app, host="127.0.0.1", port=8000)
+# direction = 
+
 
 #command to start = python main.py
