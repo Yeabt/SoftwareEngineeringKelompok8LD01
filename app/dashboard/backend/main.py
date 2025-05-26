@@ -104,4 +104,6 @@ if __name__ == "__main__":
     threading.Thread(target=run_monthly_updater, daemon=True).start()
     uvicorn.run(app, host="127.0.0.1", port=8000)
 # direction = 
+
+
 #command to start = python main.py
