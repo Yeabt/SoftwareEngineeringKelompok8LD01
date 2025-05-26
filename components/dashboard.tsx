@@ -8,7 +8,7 @@ export default function Dashboard() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch("http://localhost:8000/forecast")
+    fetch("http://localhost:8001/forecast")
       .then((res) => res.json())
       .then((data) => {
         setForecastData(data);
@@ -25,14 +25,14 @@ export default function Dashboard() {
       <div>rawr</div>
 
       <div className="bg-white p-6 rounded shadow mt-6">
-        <h2 className="text-2xl font-bold mb-4">Predicted spending</h2>
+        <h2 className="text-2xl text-blue-400 font-bold mb-4">Predicted spending</h2>
         {loading ? (
           <p>Loading...</p>
         ) : (
-          <ul className="space-y-2">
+          <ul className="text-black space-y-2">
             {Object.entries(forecastData).map(([category, value]) => (
               <li key={category}>
-                <span className="font-semibold">{category}:</span> {value}
+                <span className="font-semibold">{category.toUpperCase()} : </span> {value}
               </li>
             ))}
           </ul>

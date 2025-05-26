@@ -4,3 +4,5 @@ pandas
 statsmodels
 python-multipart
 apscheduler
+sklearn
+numpy
