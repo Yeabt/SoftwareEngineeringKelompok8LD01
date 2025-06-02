@@ -22,8 +22,6 @@ export default function Dashboard() {
 
   return (
     <div>
-      <div>rawr</div>
-
       <div className="bg-white p-6 rounded shadow mt-6">
         <h2 className="text-2xl text-blue-400 font-bold mb-4">Predicted spending</h2>
         {loading ? (
