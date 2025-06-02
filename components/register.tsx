@@ -6,20 +6,16 @@ import Head from "next/head";
 import { useState, useEffect } from "react";
 
 export default function Register() {
-  // Form state
   const [email, setEmail] = useState("");
   const [name, setName] = useState("");
   const [password, setPassword] = useState("");
-  
-  // Verification state
+
   const [cooldown, setCooldown] = useState(0);
   const [isVerifying, setIsVerifying] = useState(false);
   const [verificationSent, setVerificationSent] = useState(false);
-  
-  // Validation
-  const isEmailValid = /^\S+@\S+\.\S+$/.test(email);
 
-  // Handle cooldown timer
+  const isEmailValid = /^[^\s@]+@gmail\.com$/i.test(email);
+
   useEffect(() => {
     if (cooldown <= 0) return;
     const timer = setTimeout(() => setCooldown(cooldown - 1), 1000);
@@ -29,10 +25,9 @@ export default function Register() {
   const handleVerifyClick = () => {
     if (cooldown === 0 && isEmailValid) {
       setIsVerifying(true);
-      
-      // Simulate API call
+
       setTimeout(() => {
-        console.log("Verification email sent to:", email);
+        console.log("Verification code sent to:", email);
         setVerificationSent(true);
         setCooldown(60);
         setIsVerifying(false);
@@ -42,7 +37,6 @@ export default function Register() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // Handle form submission
     console.log({ name, email, password });
   };
 
@@ -67,9 +61,11 @@ export default function Register() {
           </div>
 
           <form className="space-y-4" onSubmit={handleSubmit}>
-            {/* Name Field */}
             <div>
-              <label htmlFor="name" className="block text-sm font-medium text-white mb-1">
+              <label
+                htmlFor="name"
+                className="block text-sm font-medium text-white mb-1"
+              >
                 Name
               </label>
               <input
@@ -83,15 +79,12 @@ export default function Register() {
               />
             </div>
 
-            {/* Email Field with Verification */}
             <div>
-              <label htmlFor="email" className="block text-sm font-medium text-white mb-1">
+              <label
+                htmlFor="email"
+                className="block text-sm font-medium text-white mb-1"
+              >
                 Email
-                {verificationSent && (
-                  <span className="ml-2 text-xs text-green-400">
-                    {cooldown > 0 ? `(resend in ${cooldown}s)` : "(ready to resend)"}
-                  </span>
-                )}
               </label>
               <div className="relative">
                 <input
@@ -100,9 +93,11 @@ export default function Register() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value.trim())}
                   className={`w-full px-4 py-2 border ${
-                    email && !isEmailValid ? "border-red-500" : "border-gray-300"
+                    email && !isEmailValid
+                      ? "border-red-500"
+                      : "border-gray-300"
                   } rounded-lg focus:ring-2 focus:ring-yellow-500 caret-amber-500 bg-darkblue text-white pr-28`}
-                  placeholder="your@email.com"
+                  placeholder="@gmail.com"
                   required
                   disabled={isVerifying}
                 />
@@ -121,9 +116,23 @@ export default function Register() {
                 >
                   {isVerifying ? (
                     <span className="flex items-center">
-                      <svg className="animate-spin h-4 w-4 mr-1" viewBox="0 0 24 24">
-                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                      <svg
+                        className="animate-spin h-4 w-4 mr-1"
+                        viewBox="0 0 24 24"
+                      >
+                        <circle
+                          className="opacity-25"
+                          cx="12"
+                          cy="12"
+                          r="10"
+                          stroke="currentColor"
+                          strokeWidth="4"
+                        ></circle>
+                        <path
+                          className="opacity-75"
+                          fill="currentColor"
+                          d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                        ></path>
                       </svg>
                       Sending
                     </span>
@@ -135,16 +144,21 @@ export default function Register() {
                 </button>
               </div>
               {email && !isEmailValid && (
-                <p className="mt-1 text-xs text-red-400">Please enter a valid email address</p>
+                <p className="mt-1 text-xs text-red-400">
+                  Please enter a valid email address
+                </p>
               )}
               {verificationSent && isEmailValid && (
-                <p className="mt-1 text-xs text-green-400">Verification email sent successfully</p>
+                <p className="mt-1 text-xs text-green-400">
+                  Verification Code has been sent to your email
+                </p>
               )}
             </div>
-
-            {/* Password Field */}
             <div>
-              <label htmlFor="password" className="block text-sm font-medium text-white mb-1">
+              <label
+                htmlFor="password"
+                className="block text-sm font-medium text-white mb-1"
+              >
                 Password
               </label>
               <input
@@ -158,8 +172,6 @@ export default function Register() {
                 minLength={8}
               />
             </div>
-
-            {/* Submit Button */}
             <button
               type="submit"
               className="w-full bg-amber-600 hover:bg-yellow-500 text-black hover:text-gray-200 font-medium py-2 px-4 rounded-xl text-center transition-colors duration-200"
