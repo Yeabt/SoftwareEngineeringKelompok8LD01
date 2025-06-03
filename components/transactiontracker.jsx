@@ -1,35 +1,37 @@
 "use client";
-// import { useTransactionStore } from '@/lib/stores/transactionStore';
+import { useTransactionStore } from '@/app/lib/stores/transactionStorage';
 import { useState } from 'react';
 import { format, parseISO, addMonths, subMonths } from 'date-fns';
-import { id } from 'date-fns/locale';
+// import { id } from 'date-fns/locale';
 import { motion, AnimatePresence } from "framer-motion";
 // import { p } from 'framer-motion/client';
 
-export default function TransactionTracker({ transactions, setTransactions }) {
+export default function TransactionTracker() {
 // Predefined categories
-// const {
-//     transactions,
-//     currentMonth,
-//     addTransaction,
-//     setCurrentMonth
-//   } = useTransactionStore();
-  
-const incomeCategories = [
-    'Allowance',
-    'Salary',
-    'Investment',
-    'Other Income'
-];
+    const {
+        transactions,
+        currentMonth,
+        addTransaction,
+        setCurrentMonth,
+        deleteTransaction,
+        deleteAllTransactions
+    } = useTransactionStore();
 
-const expenseCategories = [
-    'Food & Beverages',
-    'Transportation',
-    'Utilities',
-    'Entertainment',
-    'Healthcare',
-    'Other Expense'
-];
+    const incomeCategories = [
+        'Allowance',
+        'Salary',
+        'Investment',
+        'Other Income'
+    ];
+
+    const expenseCategories = [
+        'Food & Beverages',
+        'Transportation',
+        'Utilities',
+        'Entertainment',
+        'Healthcare',
+        'Other Expense'
+    ];
 
 // // Sample initial transactions
 // const Initialtransactions = [
@@ -81,12 +83,12 @@ const [formData, setFormData] = useState({
     category: '',
     description: ''
 });
-const [currentMonth, setCurrentMonth] = useState(new Date());
+// const [currentMonth, setCurrentMonth] = useState(new Date());
 
 // Calculate totals
 const income = transactions
     .filter(t => t.type === 'income')
-    .reduce((sum, t) => sum + t.amount, 0);  // Fixed accumulator
+    .reduce((sum, t) => t.amount, 0);  // Fixed accumulator
 
 const expenses = transactions
     .filter(t => t.type === 'expense')
@@ -144,7 +146,8 @@ const saveTransaction = () => {
         monthYear: format(currentMonth, 'MM-yyyy') // Add monthYear for filtering
     };
 
-    setTransactions([...transactions, newTransaction]); // Use prop-setter
+    // setTransactions([...transactions, newTransaction]); // Use prop-setter
+    addTransaction(newTransaction);
     setShowForm(false);
 };
 
@@ -172,7 +175,7 @@ return (
             </svg>
             </button>
             <span className="px-4 font-medium">
-            {format(currentMonth, 'MMMM yyyy', { locale: id })}
+            {format(currentMonth, 'MMMM yyyy')}
             </span>
             <button 
             onClick={nextMonth}
@@ -359,7 +362,11 @@ return (
         </motion.div>
         </div>
     )}
+    
     </AnimatePresence>
+    <button onClick={deleteAllTransactions} className="flex items-center text-color-red my-5 py-2 px-4 bg-yellow-600 hover:bg-yellow-700 text-white rounded-lg">
+        Clear All Data
+    </button>
     </div>
 );
 }
