@@ -19,9 +19,12 @@ export default function DashBoardPage() {
             {/* <h1 className="text-3xl font-bold mb-8">Your Savings Goals</h1> */}
             <GoalTracker goal={savingsGoal}/>
         </div>
-        <div className="flex items-center justify-center mx-auto p-4 gap-10">    
+        <div className="flex justify-center mx-auto p-4 gap-10">    
             <MonthlySpending />
-            <Dashboard />
+            <div className="object-top">
+                <Dashboard />
+            </div>
+            
         </div>
         </>
     )

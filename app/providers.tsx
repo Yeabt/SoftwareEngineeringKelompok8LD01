@@ -4,6 +4,6 @@ import { useTransactionStore } from './lib/stores/transactionStorage';
 
 export default function Providers({ children }: { children: ReactNode }) {
   // Initialize store on client
-  useTransactionStore.persist.rehydrate();
+  // useTransactionStore.persist.rehydrate();
   return <>{children}</>;
 }

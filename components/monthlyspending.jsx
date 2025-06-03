@@ -3,54 +3,71 @@ import { useTransactionStore } from '@/app/lib/stores/transactionStorage';
 import { Doughnut } from 'react-chartjs-2';
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
 import { format } from 'date-fns';
+import { useState, useEffect } from 'react';
 
 // Register ChartJS components
 ChartJS.register(ArcElement, Tooltip, Legend);
 
+const categories = [
+  'Food & Beverages',
+  'Household',
+  'Transportation',
+  'Utilities',
+  'Entertainment',
+  'Healthcare',
+  'Other Expense'
+];
+
 export default function MonthlySpending() {
   const { transactions, currentMonth } = useTransactionStore();
+  const [maxSpending, setMaxSpending] = useState({});
+  const [editMode, setEditMode] = useState({});
+  const [tempValues, setTempValues] = useState({});
   
-  // Format currentMonth to MM-yyyy for filtering
+  useEffect(() => {
+    const savedMaxSpending = localStorage.getItem('categoryMaxSpending');
+    if (savedMaxSpending) {
+      setMaxSpending(JSON.parse(savedMaxSpending));
+    } else {
+      const initialMaxSpending = {};
+      categories.forEach(cat => {
+        initialMaxSpending[cat] = 0;
+      });
+      setMaxSpending(initialMaxSpending);
+    }
+  }, []);
+
+  useEffect(() => {
+    localStorage.setItem('categoryMaxSpending', JSON.stringify(maxSpending));
+  }, [maxSpending]);
+
   const monthYearFilter = format(currentMonth, 'MM-yyyy');
-  
-  // Filter transactions for current month
   const currentMonthTransactions = transactions.filter(t => 
     t.monthYear === monthYearFilter
   );
-
-  // Filter only expense transactions for the current month
   const expenseTransactions = currentMonthTransactions.filter(
     t => t.type === 'expense'
   );
 
-  // Initialize category spending
-  const categorySpending = {
-    'Food & Beverages': 0,
-    'Household': 0,
-    'Transportation': 0,
-    'Utilities': 0,
-    'Entertainment': 0,
-    'Healthcare': 0,
-    'Other Expense': 0
-  };
+  const categorySpending = {};
+  categories.forEach(cat => {
+    categorySpending[cat] = 0;
+  });
 
-  // Calculate spending by category (using current month expenses)
   expenseTransactions.forEach(transaction => {
     const category = transaction.category;
-    if (category in categorySpending) {
+    if (categories.includes(category)) {
       categorySpending[category] += Math.abs(transaction.amount);
     } else {
       categorySpending['Other Expense'] += Math.abs(transaction.amount);
     }
   });
 
-  // Calculate total spending (for current month)
   const totalSpending = expenseTransactions.reduce(
     (sum, t) => sum + Math.abs(t.amount), 
     0
   );
 
-  // Prepare chart data
   const spendingData = {
     labels: Object.keys(categorySpending),
     datasets: [
@@ -65,7 +82,6 @@ export default function MonthlySpending() {
     ]
   };
 
-  // Format currency (IDR)
   const formatCurrency = (amount) => {
     return new Intl.NumberFormat('id-ID', {
       style: 'currency',
@@ -74,8 +90,22 @@ export default function MonthlySpending() {
     }).format(amount);
   };
 
-  // Format month for display
   const displayMonth = format(currentMonth, 'MMMM yyyy');
+
+  const handleMaxSpendingChange = (category, value) => {
+    setTempValues(prev => ({ ...prev, [category]: value }));
+  };
+
+  const saveMaxSpending = (category) => {
+    const value = parseFloat(tempValues[category] || '0');
+    setMaxSpending(prev => ({ ...prev, [category]: value }));
+    setEditMode(prev => ({ ...prev, [category]: false }));
+  };
+
+  const toggleEditMode = (category) => {
+    setEditMode(prev => ({ ...prev, [category]: !prev[category] }));
+    setTempValues(prev => ({ ...prev, [category]: maxSpending[category]?.toString() || '0' }));
+  };
 
   return (
     <div className="max-w-4xl min-w-auto w-3xl bg-white p-6 rounded-lg shadow-md">
@@ -85,8 +115,7 @@ export default function MonthlySpending() {
       </h3>
       
       <div className="flex flex-col md:flex-row items-center justify-center">
-        {/* Pie Chart - Always shown */}
-        <div className="w-48 h-48 md:mr-8">
+        <div className="w-100 h-100 md:mr-8">
           <Doughnut 
             data={spendingData} 
             options={{ 
@@ -98,19 +127,87 @@ export default function MonthlySpending() {
           />
         </div>
 
-        {/* Legend - Always shown with all categories */}
-        <div className="mt-6 md:mt-0">
-          {spendingData.labels.map((label, index) => (
-            <div key={label} className="flex items-center mb-3">
-              <div 
-                className="w-4 h-4 rounded-full mr-2" 
-                style={{ backgroundColor: spendingData.datasets[0].backgroundColor[index] }}
-              />
-              <span className="text-gray-700">
-                {label} - {formatCurrency(spendingData.datasets[0].data[index])}
-              </span>
-            </div>
-          ))}
+        <div className="mt-6 md:mt-0 w-full md:w-auto">
+          {spendingData.labels.map((label, index) => {
+            const spent = categorySpending[label];
+            const max = maxSpending[label] || 0;
+            const percentage = max > 0 ? Math.min(100, (spent / max) * 100) : 0;
+            const isOverBudget = max > 0 && spent >= max;
+            
+            return (
+              <div key={label} className="mb-4">
+                <div className="flex items-center mb-1">
+                  <div 
+                    className="w-4 h-4 rounded-full mr-2" 
+                    style={{ backgroundColor: spendingData.datasets[0].backgroundColor[index] }}
+                  />
+                  <span className={`font-medium ${isOverBudget ? 'text-red-600' : 'text-gray-700'}`}>
+                    {label} {isOverBudget && '(Warning!)'}
+                  </span>
+                </div>
+                
+                <div className="flex items-center">
+                  <div className="flex-1 bg-gray-200 rounded-full h-4 mr-2">
+                    <div 
+                      className={`h-4 rounded-full ${isOverBudget ? 'bg-red-500' : ''}`}
+                      style={{
+                        width: `${percentage}%`,
+                        backgroundColor: isOverBudget 
+                          ? '#EF4444' 
+                          : spendingData.datasets[0].backgroundColor[index],
+                        transition: 'width 0.5s ease'
+                      }}
+                    />
+                  </div>
+                  <span className={`text-sm ${isOverBudget ? 'text-red-600 font-bold' : 'text-gray-600'}`}>
+                    {Math.round(percentage)}%
+                  </span>
+                </div>
+                
+                <div className="flex justify-between text-xs mt-1">
+                  <span className={isOverBudget ? 'text-red-600' : 'text-gray-500'}>
+                    Spent: {formatCurrency(spent)}
+                  </span>
+                  <span className={isOverBudget ? 'text-red-600' : 'text-gray-500'}>
+                    Max: {formatCurrency(max)}
+                  </span>
+                </div>
+                
+                <div className="mt-1 flex items-center">
+                  {editMode[label] ? (
+                    <>
+                      <input
+                        type="number"
+                        value={tempValues[label] || ''}
+                        onChange={(e) => handleMaxSpendingChange(label, e.target.value)}
+                        className="w-24 p-1 border rounded text-sm mr-2 text-black"
+                        placeholder="Max amount"
+                      />
+                      <button
+                        onClick={() => saveMaxSpending(label)}
+                        className="bg-green-500 text-white px-2 py-1 rounded text-sm mr-1"
+                      >
+                        Save
+                      </button>
+                      <button
+                        onClick={() => setEditMode(prev => ({ ...prev, [label]: false }))}
+                        className="bg-gray-500 text-white px-2 py-1 rounded text-sm"
+                      >
+                        Cancel
+                      </button>
+                    </>
+                  ) : (
+                    <button
+                      onClick={() => toggleEditMode(label)}
+                      className="text-blue-500 text-sm underline"
+                    >
+                      Set budget
+                    </button>
+                  )}
+                </div>
+              </div>
+            );
+          })}
         </div>
       </div>
       
