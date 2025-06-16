@@ -110,9 +110,11 @@ export default function MonthlySpending() {
   return (
     <div className="max-w-4xl min-w-auto w-3xl bg-white p-6 rounded-lg shadow-md">
       <h2 className="text-2xl text-yellow-500 font-bold mb-4">Monthly Spending</h2>
-      <h3 className="text-center text-lg font-semibold text-gray-700 mb-6">
-        {displayMonth}
-      </h3>
+      <div className="items-center justify-center">
+        <h3 className="text-center text-2xl font-semibold text-gray-700 mb-6 border-2 bg-yellow-200 rounded-md">
+          {displayMonth}
+        </h3>
+      </div>
       
       <div className="flex flex-col md:flex-row items-center justify-center">
         <div className="w-100 h-100 md:mr-8">
