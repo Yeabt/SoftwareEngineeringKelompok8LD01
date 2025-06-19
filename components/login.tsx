@@ -1,15 +1,30 @@
 'use client';
 import Link from "next/link";
 import Head from "next/head";
-import { useLogin } from "@/app/login/layout";
+// import { useLogin } from "@/app/login/layout";
+import { useState } from "react";
+import { useRouter } from 'next/navigation';
+import axios from 'axios';
 
 export default function LoginPage() {
-  const {
-    formData,
-    error,
-    handleChange,
-    handleSubmit
-  } = useLogin();
+
+  const [form, setForm] = useState({email: '', password: '' });//
+  const router = useRouter(); // ← Get the router instance
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      const res = await axios.post('http://localhost:5000/api/auth/login', form);
+      if (res.status === 200 && res.data.message === 'Login successful') {
+        router.push('/dashboard');
+      } else {
+        alert(res.data.message);
+      }
+    } catch (err: any) {
+      console.error(err);
+      alert(err.response?.data?.message || 'Login failed');
+    }
+  };
 
   return (
     <div className="min-h-screen bg-darkblue flex flex-col items-center justify-center p-6">
@@ -30,8 +45,8 @@ export default function LoginPage() {
               type="email"
               id="email"
               name="email"
-              value={formData.email}
-              onChange={handleChange}
+              value={form.email}
+              onChange={(e) => setForm({ ...form, email: e.target.value.trim() })}
               className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 caret-amber-500 bg-black/20 text-white placeholder-gray-400"
               placeholder="Enter your email"
               required
@@ -51,8 +66,8 @@ export default function LoginPage() {
               type="password"
               id="password"
               name="password"
-              value={formData.password}
-              onChange={handleChange}
+              value={form.password}
+              onChange={(e) => setForm({ ...form, password: e.target.value })}
               className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-yellow-500 focus:border-blue-500 caret-amber-500 bg-black/20 text-white placeholder-gray-400"
               placeholder="Enter your password"
               required

@@ -4,17 +4,20 @@
 import Link from "next/link";
 import Head from "next/head";
 import { useState, useEffect } from "react";
+import axios from 'axios';
 
 export default function Register() {
-  const [email, setEmail] = useState("");
-  const [name, setName] = useState("");
-  const [password, setPassword] = useState("");
+  // const [email, setEmail] = useState("");
+  // const [name, setName] = useState("");
+  // const [password, setPassword] = useState("");
+  const [form, setForm] = useState({username: '', email: '', password: '' });//
+
 
   const [cooldown, setCooldown] = useState(0);
   const [isVerifying, setIsVerifying] = useState(false);
   const [verificationSent, setVerificationSent] = useState(false);
 
-  const isEmailValid = /^[^\s@]+@gmail\.com$/i.test(email);
+  const isEmailValid = /^[^\s@]+@gmail\.com$/i.test(form.email);
 
   useEffect(() => {
     if (cooldown <= 0) return;
@@ -27,7 +30,7 @@ export default function Register() {
       setIsVerifying(true);
 
       setTimeout(() => {
-        console.log("Verification code sent to:", email);
+        console.log("Verification code sent to:", form.email);
         setVerificationSent(true);
         setCooldown(60);
         setIsVerifying(false);
@@ -35,9 +38,14 @@ export default function Register() {
     }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log({ name, email, password });
+    try {
+      const res = await axios.post('http://localhost:5000/api/auth/signup', form);
+      alert(res.data.message || 'User registered!');
+    } catch (err: any) {
+      alert(err.response?.data?.error || 'Error registering user.');
+    }
   };
 
   return (
@@ -71,8 +79,8 @@ export default function Register() {
               <input
                 type="text"
                 id="name"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
+                value={form.username}
+                onChange={(e) => setForm({ ...form, username: e.target.value })}
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500 caret-amber-500 bg-darkblue text-white"
                 placeholder="Your name"
                 required
@@ -90,10 +98,10 @@ export default function Register() {
                 <input
                   type="email"
                   id="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value.trim())}
+                  value={form.email}
+                  onChange={(e) => setForm({ ...form, email: e.target.value.trim() })}
                   className={`w-full px-4 py-2 border ${
-                    email && !isEmailValid
+                    form.email && !isEmailValid
                       ? "border-red-500"
                       : "border-gray-300"
                   } rounded-lg focus:ring-2 focus:ring-yellow-500 caret-amber-500 bg-darkblue text-white pr-28`}
@@ -143,7 +151,7 @@ export default function Register() {
                   )}
                 </button>
               </div>
-              {email && !isEmailValid && (
+              {form.email && !isEmailValid && (
                 <p className="mt-1 text-xs text-red-400">
                   Please enter a valid email address
                 </p>
@@ -164,8 +172,8 @@ export default function Register() {
               <input
                 type="password"
                 id="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
+                value={form.password}
+                onChange={(e) => setForm({ ...form, password: e.target.value })}
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500 caret-amber-500 bg-darkblue text-white"
                 placeholder="Your password"
                 required
